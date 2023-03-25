@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 // Each person has two parents and two alleles
 typedef struct person
@@ -39,43 +40,77 @@ int main(void)
 // Create a new individual with `generations`
 person *create_family(int generations)
 {
-    // TODO: Allocate memory for new person
+    	// TODO: Allocate memory for new person
+	person *child = malloc(sizeof(person));
 
-    // If there are still generations left to create
-    if (generations > 1)
-    {
-        // Create two new parents for current person by recursively calling create_family
-        person *parent0 = create_family(generations - 1);
-        person *parent1 = create_family(generations - 1);
+    	// If there are still generations left to create
+    	if (generations > 1)
+    	{
+        	// Create two new parents for current person by recursively calling create_family
+        	person *parent0 = create_family(generations - 1);
+        	person *parent1 = create_family(generations - 1);
 
-        // TODO: Set parent pointers for current person
+        	// TODO: Set parent pointers for current person
+		child->parents[0] = parent0;
+		child->parents[1] = parent1;
 
-        // TODO: Randomly assign current person's alleles based on the alleles of their parents
-
+        	// TODO: Randomly assign current person's alleles based on the alleles of their parents
+		char rand_a1, rand_a2;
+		do {
+			rand_a1 = random_allele();
+		}
+		while (strchr(parent0->alleles, rand_a1) == NULL && strchr(parent1->alleles, rand_a1) == NULL);
+		bool isMatch = false;
+		do
+		{
+			rand_a2 = random_allele();
+			if (strchr(parent0->alleles, rand_a1) != NULL && strchr(parent1->alleles, rand_a2) != NULL)
+			{
+				isMatch = true;
+				break;
+			}
+			else if (strchr(parent1->alleles, rand_a1) != NULL && strchr(parent0->alleles, rand_a2) != NULL)
+			{
+				isMatch = true;
+				break;
+			}
+		}
+		while (!isMatch);
+		child->alleles[0] = rand_a1;
+		child->alleles[1] = rand_a2;
     }
 
     // If there are no generations left to create
     else
     {
         // TODO: Set parent pointers to NULL
+	child->parents[0] = NULL;
+	child->parents[1] = NULL;
 
         // TODO: Randomly assign alleles
-
+	child->alleles[0] = random_allele();
+	child->alleles[1] = random_allele();
     }
 
     // TODO: Return newly created person
-    return NULL;
+    return child;
 }
 
 // Free `p` and all ancestors of `p`.
 void free_family(person *p)
 {
-    // TODO: Handle base case
+    	// TODO: Handle base case
+	if (p == NULL)
+	{
+		return;
+	}
 
-    // TODO: Free parents recursively
+    	// TODO: Free parents recursively
+	free(p->parents[0]);
+	free(p->parents[1]);
 
-    // TODO: Free child
-
+    	// TODO: Free child
+	free(p);
 }
 
 // Print each family member and their alleles.
